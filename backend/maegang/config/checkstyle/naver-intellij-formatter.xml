@@ -56,7 +56,7 @@
         <option name="ARRAY_INITIALIZER_WRAP" value="1"/>
         <indentOptions>
             <option name="CONTINUATION_INDENT_SIZE" value="4"/>
-            <option name="USE_TAB_CHARACTER" value="true"/>
+            <option name="USE_TAB_CHARACTER" value="false"/>
         </indentOptions>
     </codeStyleSettings>
 </code_scheme>

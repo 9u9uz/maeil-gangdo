@@ -3,6 +3,11 @@ plugins {
 	id 'org.springframework.boot' version '3.3.3'
 	id 'io.spring.dependency-management' version '1.1.6'
 	id 'org.asciidoctor.jvm.convert' version '3.3.2'
+
+	// code analysis
+	id 'checkstyle' // Checkstyle 플러그인
+	id 'com.github.spotbugs' version '6.0.22'
+	id 'com.diffplug.spotless' version '6.25.0'
 }
 
 group = 'com.guguz'
@@ -54,4 +59,50 @@ tasks.named('test') {
 tasks.named('asciidoctor') {
 	inputs.dir snippetsDir
 	dependsOn test
+}
+
+checkstyle {
+	toolVersion = '10.18.1'
+	configFile = rootProject.file('config/checkstyle/naver-checkstyle-rules.xml')
+	configProperties = ['suppressionFile': 'config/checkstyle/naver-checkstyle-suppressions.xml']
+	sourceSets = [project.sourceSets.main]
+}
+
+tasks.withType(Checkstyle).configureEach {
+	reports {
+		html.required = true
+		html.outputLocation = file("reports/checkstyle/checkstyle.html")
+		xml.required = false
+	}
+}
+
+checkstyleMain.source = fileTree('src/main/java')
+
+spotless {
+	java {
+		target('**/*.java')
+		importOrder()
+		removeUnusedImports()
+		formatAnnotations()
+		indentWithTabs(1)
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
+
+	// Java 외 파일에 적용되도록 설정
+	format 'misc', {
+		target '**/*.gradle', '**/*.md', '**/.gitignore'
+		trimTrailingWhitespace()
+		indentWithTabs()
+		endWithNewline()
+	}
+}
+
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+
+// build 시 코드 품질 도구가 실행되도록 설정
+tasks.check {
+	dependsOn 'spotlessApply'
+	dependsOn 'spotbugsMain'
 }

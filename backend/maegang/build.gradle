@@ -83,7 +83,7 @@ spotless {
         importOrder()
         removeUnusedImports()
         formatAnnotations()
-        indentWithTabs(1)
+        indentWithSpaces(4)
         trimTrailingWhitespace()
         endWithNewline()
     }

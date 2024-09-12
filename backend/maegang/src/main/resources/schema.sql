@@ -1,15 +1,15 @@
 CREATE TYPE "member_status" AS ENUM (
-    ''ACTIVE'',
-    ''INACTIVE'',
-    ''PENDING'',
-    ''BANNED'',
-    ''DELETED''
+    'ACTIVE',
+    'INACTIVE',
+    'PENDING',
+    'BANNED',
+    'DELETED'
     );
 
 CREATE TYPE "plan_status" AS ENUM (
-    ''PENDING'',
-    ''IN_PROGRESS'',
-    ''COMPLETED''
+    'PENDING',
+    'IN_PROGRESS',
+    'COMPLETED'
     );
 CREATE TABLE "member"
 (

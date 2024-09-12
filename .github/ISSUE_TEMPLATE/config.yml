@@ -1,0 +1,9 @@
+blank_issues_enabled: false
+
+issue_templates:
+  - name: To-Do for Backend
+    description: @dadahee 담당 작업 할당
+    file: issue_template_for_be.md
+  - name: To-Do for Frontend
+    description: @inkyu0103 담당 작업 할당
+    file: issue_template_for_fe.md

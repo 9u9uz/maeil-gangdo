@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/maegang
+    username: postgres
+    password: postgres
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true # querydsl -> jpql 코드 확인
+        default_batch_fetch_size: 100
+    open-in-view: false # hibernate 세션을 컨트롤러 처리 후 종료되도록 설정
+
+  data:
+    web:
+      pageable: # Pageable global default 설정
+        default-page-size: 10
+        max-page-size: 2000
+logging.level:
+  org.hibernate.SQL: debug
+#  org.hibernate.type: trace

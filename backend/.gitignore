@@ -37,4 +37,4 @@ out/
 .vscode/
 
 ### Code Styler
-reports/**/*.html
+maegang/reports/**/*.html

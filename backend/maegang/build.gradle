@@ -1,0 +1,107 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.3'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'org.asciidoctor.jvm.convert' version '3.3.2'
+
+    // code analysis
+    id 'checkstyle' // Checkstyle 플러그인
+    id 'com.github.spotbugs' version '6.0.22'
+    id 'com.diffplug.spotless' version '6.25.0'
+}
+
+group = 'com.guguz'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('snippetsDir', file("build/generated-snippets"))
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'org.postgresql:postgresql'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    outputs.dir snippetsDir
+    useJUnitPlatform()
+}
+
+tasks.named('asciidoctor') {
+    inputs.dir snippetsDir
+    dependsOn test
+}
+
+checkstyle {
+    toolVersion = '10.18.1'
+    configFile = rootProject.file('config/checkstyle/naver-checkstyle-rules.xml')
+    configProperties = ['suppressionFile': 'config/checkstyle/naver-checkstyle-suppressions.xml']
+    sourceSets = [project.sourceSets.main]
+}
+
+tasks.withType(Checkstyle).configureEach {
+    reports {
+        html.required = true
+        html.outputLocation = file("reports/checkstyle/checkstyle.html")
+        xml.required = false
+    }
+}
+
+checkstyleMain.source = fileTree('src/main/java')
+
+spotless {
+    java {
+        target('**/*.java')
+        importOrder()
+        removeUnusedImports()
+        formatAnnotations()
+        indentWithSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    // Java 외 파일에 적용되도록 설정
+    format 'misc', {
+        target '**/*.gradle', '**/*.md', '**/.gitignore'
+        trimTrailingWhitespace()
+        indentWithSpaces(4)
+        endWithNewline()
+    }
+}
+
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+
+// build 시 코드 품질 도구가 실행되도록 설정
+tasks.check {
+    dependsOn 'spotlessApply'
+    dependsOn 'spotbugsMain'
+}
